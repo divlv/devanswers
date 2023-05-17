@@ -8,23 +8,14 @@ function randomPastelColor() {
     return `hsl(${hue}, 100%, 20%)`;
 }
 
-async function updatePhrase() {
-    const response = await fetch("/random_phrase");
-    const data = await response.json();
-    phraseText.textContent = data.phrase;
-    phraseLink.href = data.link;
-    logoLink.href = data.link;
-    body.style.backgroundColor = randomPastelColor();
-}
+body.style.backgroundColor = randomPastelColor();
 
 phraseLink.addEventListener("click", (event) => {
     event.preventDefault();
-    updatePhrase();
+    window.location.href = event.target.getAttribute("href");
 });
 
 logoLink.addEventListener("click", (event) => {
     event.preventDefault();
-    updatePhrase();
+    window.location.href = event.target.parentElement.getAttribute("href");
 });
-
-updatePhrase();
