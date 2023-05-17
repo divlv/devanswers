@@ -1,0 +1,38 @@
+@font-face {
+    font-family: "Open Sans Condensed Bold";
+    src: url("/static/fonts/OpenSansCondensedBold/OpenSansCondensedBold.ttf");
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Open Sans Condensed Bold", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+}
+
+.container {
+    text-align: center;
+}
+
+#phrase-text {
+    font-size: 2rem;
+    color: white;
+    text-decoration: none;
+}
+
+#phrase-link {
+    text-decoration: none;
+}
+
+#logo {
+    display: block;
+    margin-top: 20px;
+}

@@ -1,0 +1,26 @@
+# Local .terraform directories
+**/.terraform/*
+
+.idea
+
+#
+*.pfx*
+*.pem
+*.key
+*.crt
+*.ppk
+*.txt
+
+**/*setup*environment.bat
+**/*setup*credentials.bat
+
+**/*init.bat
+**/*plan.bat
+**/*apply.bat
+**/*clean*.bat
+**/*token*.bat
+
+**/*certificate*
+
+# Temporary files
+**/~*.*
