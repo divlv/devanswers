@@ -9,7 +9,7 @@
 *.key
 *.crt
 *.ppk
-*.txt
+*task*.txt
 
 **/*setup*environment.bat
 **/*setup*credentials.bat
