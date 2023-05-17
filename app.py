@@ -44,4 +44,4 @@ def serve_phrase(subpath=None):
 
 
 # if __name__ == "__main__":
-#    app.run()
+#    app.run(port=8080)
