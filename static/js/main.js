@@ -4,7 +4,7 @@ const body = document.body;
 
 function randomPastelColor() {
     const hue = Math.floor(Math.random() * 360);
-    return `hsl(${hue}, 100%, 85%)`;
+    return `hsl(${hue}, 100%, 20%)`; // Change 35% to 20%
 }
 
 async function updatePhrase() {
