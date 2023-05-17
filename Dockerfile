@@ -1,6 +1,6 @@
 FROM python:3.9-alpine
 
-COPY ./ /app/
+COPY . /app/
 COPY ./requirements.txt /app/requirements.txt
 # "-p" - create all chain with parent dirs, if any
 RUN mkdir -p /cache
