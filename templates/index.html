@@ -67,6 +67,27 @@
                 <img id="logo" src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
             </a>
         </div>
+
+
+        <a href="#" id="copyLink" data-link="{{ current_link }}">Скопировать именно эту отмазку</a>
+
+        <script>
+            document.getElementById("copyLink").onclick = function (event) {
+                event.preventDefault();
+                var dummy = document.createElement('input'),
+                    text = window.location.origin + this.getAttribute('data-link');
+                document.body.appendChild(dummy);
+                dummy.value = text;
+                dummy.select();
+                document.execCommand('copy');
+                document.body.removeChild(dummy);
+                this.textContent = "Скопировано";
+            }
+        </script>
+
+
+
+
     </div>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

@@ -22,6 +22,7 @@ def index():
             link=next_link,
             logo_link=next_link,
             number=entry["number"],
+            current_link=entry["link"],
         )
 
 
@@ -48,6 +49,7 @@ def serve_phrase(subpath=None):
             link=next_link,
             logo_link=next_link,
             number=entry["number"],
+            current_link=entry["link"],
         )
 
 
