@@ -20,95 +20,13 @@ jobs:
       - name: Setting COMMIT_ID env variable
         run: |
           echo "COMMIT_ID=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
-      - name: Apply SQL changes if any
-        run: |
-          cd sql_deployment
-          #
-          export LASTCHANGE=$(docker run --rm emergn/mssql-cli \
-          -U ${{ secrets.AZ_SQL_LOGIN_FULL }} -P ${{ secrets.AZ_SQL_PASSWORD }} -d ${{ secrets.AZ_SQL_DB_NAME }} -S ${{ secrets.AZ_SQL_SERVER_HOST }} \
-          -Q "SELECT TOP 1 VERS.VERSION_NUMBER FROM SYSTEM_ADMIN.VERSION_OVERVIEW VERS ORDER BY VERS.version_number DESC" | grep -oP '^\|[^0-9]+\K[0-9]+')
-          echo "Last SQL change detected from DB: $LASTCHANGE"
-
-          export LASTCHANGE_FOUND=0
-
-          for i in $(ls -N *.sql); do
-
-          if [ $LASTCHANGE_FOUND -ne 1 ]; then
-            export OUT=$(echo $i | grep ^[0]*$LASTCHANGE\.sql)
-            if [ -z "$OUT" ]; then
-              echo "Skip $i script, because we need ***$LASTCHANGE.sql"
-              continue
-            else
-              export LASTCHANGE_FOUND=1
-            fi
-          fi
-
-          echo "Apply SQL script: $i"
-          docker run -v $(pwd):/r emergn/jmssqlcli -s ${{ secrets.AZ_SQL_SERVER_HOST }} -d ${{ secrets.AZ_SQL_DB_NAME }} -l ${{ secrets.AZ_SQL_LOGIN_FULL }} -p ${{ secrets.AZ_SQL_PASSWORD }} -m update -i /r/$i 1>./~out 2>./~err
-          echo "--- SQL output: ----------------------------------"
-          cat ./~out
-          echo "--------------------------------------------------"
-          export OUT=$(grep "SQLServerException" ./~err)
-          if [ -z "$OUT" ]; then
-              echo "Looks like SQL executed without any problems."
-          else
-              cat ./~err
-              echo "### Query Error! Exiting pipeline."
-              exit 1
-          fi
-          echo "Delay 5 sec. before next script..."
-          sleep 5
-          done
-          echo "SQL applied."
-        # Now - always run SQL changes.
-        #if: "!contains(github.event.head_commit.message, '#skipsql')"
-      - name: Build VIAPP Docker image
+      - name: Build-n-push Devanswers Docker image
         run: |
           echo "Setting version"
-          sed -i "s/COMMIT_ID/1.0 build $COMMIT_ID/g" vi_app/templates/layouts/index.html
-          #
-          echo "Build and push Docker image..."
-          docker login -u "${{ secrets.DOCKER_REGISTRY_LOGIN }}" -p "${{ secrets.DOCKER_REGISTRY_PASS }}" https://"${{ secrets.DOCKER_REGISTRY_URL }}"
-          docker container prune -f
-        # Suspend Python application.
-        if: "contains(github.event.head_commit.message, '#PYTHON_APP_SUSPENDED')"
-      - name: Cleanup old cached viapp image
-        run: |
-          docker rmi "${{ secrets.DOCKER_REGISTRY_URL }}"/viapp:latest
-        # Suspend Python application.
-        if: "contains(github.event.head_commit.message, '#PYTHON_APP_SUSPENDED')"
-        continue-on-error: true
-      - name: Cleanup old cached base image
-        run: |
-          docker rmi "${{ secrets.DOCKER_REGISTRY_URL }}"/viappbase:latest
-        # Suspend Python application.
-        if: "contains(github.event.head_commit.message, '#PYTHON_APP_SUSPENDED')"
-        continue-on-error: true
-      - name: Build VIAPP Docker image
-        run: |
-          sed -i "s/#RUNTIME_HOST#/${{ secrets.RUNTIME_HOST }}/g" start_app_w_gunicorn.sh
-          docker build . -t viapp
-          docker tag viapp "${{ secrets.DOCKER_REGISTRY_URL }}"/viapp
-          docker push "${{ secrets.DOCKER_REGISTRY_URL }}"/viapp
+          sed -i "s/COMMIT_ID/GitHub build $COMMIT_ID/g" templates/index.html
+          echo "Login to Docker registry"
+          docker login -u "${{ secrets.DOCKER_REGISTRY_LOGIN }}" -p "${{ secrets.DOCKER_REGISTRY_PASS }}"
+          docker build . -t devanswers
+          docker image tag devanswers:latest ${{ secrets.DOCKER_REGISTRY_USER }}/devanswers:latest
+          docker image push ${{ secrets.DOCKER_REGISTRY_USER }}/devanswers:latest
           echo "Docker image ready."
-        # Suspend Python application.
-        if: "contains(github.event.head_commit.message, '#PYTHON_APP_SUSPENDED')"
-  deploy:
-    if: "!contains(github.event.head_commit.message, '#spsnapshot')"
-    needs: build
-    name: Deploy runnable Docker image
-    runs-on: [self-hosted, linux]
-    steps:
-      - name: Stop old image, download updated one and start VIAPP
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.RUNTIME_HOST }}
-          username: root
-          key: ${{ secrets.PYTHON_RUNTIME_PRIVATE_KEY }}
-          port: 22
-          script: |
-            /opt/stop.sh
-            /opt/delete_old_app_image.sh
-            /opt/run_d.sh
-        # Suspend Python application.
-        if: "contains(github.event.head_commit.message, '#PYTHON_APP_SUSPENDED')"
