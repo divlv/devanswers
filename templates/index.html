@@ -5,14 +5,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devanswers: Отмазки для разработчиков</title>
+    <title>Devanswers: Отмазка N.{{ number if number }} для разработчиков</title>
     <meta name="description"
         content="Devanswers - собрание юмористических фраз и отмазок для программистов. Здесь вы найдете шутки, отражающие специфику профессии разработчика.">
     <meta name="keywords"
         content="Devanswers, программисты, разработчики, отмазки, шутки, юмор, профессия разработчика">
     <meta name="author" content="Sergey Boyko, Dmitrijs Zaharovs">
     <meta name="robots" content="index, follow">
-    <meta property="og:title" content="Devanswers: Отмазки для разработчиков">
+    <meta property="og:title" content="Devanswers: Отмазка N.{{ number if number }}">
     <meta property="og:description"
         content="Devanswers - собрание юмористических фраз и отмазок для программистов. Здесь вы найдете шутки, отражающие специфику профессии разработчика.">
     <meta property="og:type" content="website">
@@ -52,6 +52,11 @@
 
 <body>
     <div class="container">
+        <div class="phrase-container">
+            <a id="phrase-link" href="{{ link if link }}">
+                <p id="phrase-text" style="color: hsl(0, 0%, 50%);">Отмазка N.{{ number if number }}:</p>
+            </a>
+        </div>
         <div class="phrase-container">
             <a id="phrase-link" href="{{ link if link }}">
                 <p id="phrase-text">{{ phrase if phrase }}</p>

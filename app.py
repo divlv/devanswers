@@ -17,7 +17,11 @@ def index():
         entry = random.choice(data["phrases"])
         next_link = get_random_link(data["phrases"], exclude_link=entry["link"])
         return render_template(
-            "index.html", phrase=entry["phrase"], link=next_link, logo_link=next_link
+            "index.html",
+            phrase=entry["phrase"],
+            link=next_link,
+            logo_link=next_link,
+            number=entry["number"],
         )
 
 
@@ -39,7 +43,11 @@ def serve_phrase(subpath=None):
             entry = random.choice(data["phrases"])
         next_link = get_random_link(data["phrases"], exclude_link=entry["link"])
         return render_template(
-            "index.html", phrase=entry["phrase"], link=next_link, logo_link=next_link
+            "index.html",
+            phrase=entry["phrase"],
+            link=next_link,
+            logo_link=next_link,
+            number=entry["number"],
         )
 
 
